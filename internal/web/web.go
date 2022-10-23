@@ -3,6 +3,7 @@ package web
 import (
 	"embed"
 	"encoding/json"
+	"fmt"
 	"gateway/internal/file"
 	"io"
 	"io/fs"
@@ -69,28 +70,44 @@ func API(port string) {
 	r.StaticFS("/assets/js", http.FS(js))
 
 	r.GET(API_DATA, func(c *gin.Context) {
-		c.Data(http.StatusOK, "plain/text; charset=utf-8", []byte(file.ReadFile()))
+		c.Data(http.StatusOK, "plain/text; charset=utf-8", []byte(file.GetHostsFileContent()))
 		c.Abort()
 	})
 
 	r.GET(API_COMPARE, func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"status":  "posted",
-			"data":    file.ReadFile(),
+			"data":    file.GetHostsFileContent(),
 			"prepare": file.ReadPrepareFile(),
 		})
 		c.Abort()
 	})
 
 	r.POST(API_PREPARE, func(c *gin.Context) {
-		body, _ := io.ReadAll(c.Request.Body)
-		if body != nil {
-			c.Data(http.StatusOK, "plain/text; charset=utf-8", []byte(body))
-		} else {
+		body, err := io.ReadAll(c.Request.Body)
+		if err != nil {
+			// TODO: 提示处理出错
+			fmt.Println(err)
 			c.Data(http.StatusOK, "plain/text; charset=utf-8", []byte("请求有问题"))
+			c.Abort()
+			return
+		}
+
+		if body == nil {
+			// TODO: 提示处理出错
+			fmt.Println(err)
+			c.Data(http.StatusOK, "plain/text; charset=utf-8", []byte("请求有问题"))
+			c.Abort()
+			return
+		}
+
+		success := file.SaveHostsFileContent(body)
+		if success {
+			c.Data(http.StatusOK, "plain/text; charset=utf-8", []byte("保存成功"))
+		} else {
+			c.Data(http.StatusOK, "plain/text; charset=utf-8", []byte("保存失败"))
 		}
 		c.Abort()
-
 	})
 
 	r.GET("/api/config.js", func(c *gin.Context) {
