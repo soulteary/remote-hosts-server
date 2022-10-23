@@ -1,0 +1,75 @@
+:root {
+  --background-color: #000;
+  --text-color: hsl(0, 0%, 100%);
+  --border-color: #a6a6a6;
+  --body-background-color: #1b1b1b;
+  --footer-text-color: #999;
+  --footer-link-color: #ccc;
+  --footer-link-hover-color: #fff;
+}
+
+body {
+  background: var(--body-background-color);
+}
+
+.logo {
+  box-sizing: border-box;
+  display: grid;
+  place-content: center;
+  background-color: var(--background-color);
+  font-family: monospace;
+  font-size: 60px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-color);
+  border: 4px solid var(--border-color);
+  user-select: none;
+}
+
+.logo > div {
+  box-sizing: border-box;
+  grid-area: 1/1/-1/-1;
+}
+.top {
+  box-sizing: border-box;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 48%, 0% 58%);
+}
+.bottom {
+  box-sizing: border-box;
+  clip-path: polygon(0% 60%, 100% 50%, 100% 100%, 0% 100%);
+  color: transparent;
+  background: -webkit-linear-gradient(179deg, var(--background-color) 53%, var(--text-color) 65%);
+  background: linear-gradient(179deg, var(--background-color) 53%, var(--text-color) 65%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  transform: translateX(-0.02em);
+}
+
+.header {
+  position: relative;
+}
+.header .project {
+  position: absolute;
+  bottom: 6px;
+  right: 8px;
+  color: #fff;
+}
+
+.footer {
+  text-align: center;
+}
+.footer ul {
+  margin: 0;
+  font-size: 12px;
+  color: var(--footer-text-color);
+  line-height: 14px;
+}
+.footer li {
+  display: inline-block;
+}
+.footer li a {
+  color: var(--footer-link-color);
+}
+.footer li a:hover {
+  color: var(--footer-link-hover-color);
+}
