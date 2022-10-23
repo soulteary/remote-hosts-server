@@ -1,10 +1,7 @@
 $(function () {
-  var API = {
-    GET_DATA: "/api/data.txt",
-    PREPARE: "/api/prepare",
-  };
-
+  var API = window.$API$;
   var instance = null;
+
   function InitializeEditor(data) {
     var hidden = document.createElement("textarea");
     hidden.style.display = "none";
@@ -25,7 +22,7 @@ $(function () {
   function PrepareUpdate(data) {
     $.ajax({
       type: "POST",
-      url: API.PREPARE,
+      url: API.Prepare,
       data: data,
       contentType: "text/plain",
       success: function (response) {
@@ -47,7 +44,7 @@ $(function () {
 
   function InitializeHomepage() {
     $.ajax({
-      url: API.GET_DATA,
+      url: API.Data,
       success: function (data) {
         // TODO: 提示初始化成功
         InitializeEditor(data);

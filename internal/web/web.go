@@ -2,6 +2,7 @@ package web
 
 import (
 	"embed"
+	"encoding/json"
 	"gateway/internal/file"
 	"io"
 	"io/fs"
@@ -22,6 +23,25 @@ var ConfirmPage []byte
 
 //go:embed assets
 var Assets embed.FS
+
+const (
+	API_DATA    = "/api/data"
+	API_COMPARE = "/api/compare"
+	API_PREPARE = "/api/prepare"
+)
+
+func getConfig() string {
+	config := map[string]string{
+		"Data":    API_DATA,
+		"Compare": API_COMPARE,
+		"Prepare": API_PREPARE,
+	}
+	b, err := json.Marshal(config)
+	if err != nil {
+		return "{}"
+	}
+	return string(b)
+}
 
 func API(port string) {
 	gin.SetMode(gin.ReleaseMode)
@@ -48,12 +68,12 @@ func API(port string) {
 	js, _ := fs.Sub(Assets, "assets/js")
 	r.StaticFS("/assets/js", http.FS(js))
 
-	r.GET("/api/data.txt", func(c *gin.Context) {
+	r.GET(API_DATA, func(c *gin.Context) {
 		c.Data(http.StatusOK, "plain/text; charset=utf-8", []byte(file.ReadFile()))
 		c.Abort()
 	})
 
-	r.GET("/api/diff", func(c *gin.Context) {
+	r.GET(API_COMPARE, func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"status":  "posted",
 			"data":    file.ReadFile(),
@@ -62,7 +82,7 @@ func API(port string) {
 		c.Abort()
 	})
 
-	r.POST("/api/prepare", func(c *gin.Context) {
+	r.POST(API_PREPARE, func(c *gin.Context) {
 		body, _ := io.ReadAll(c.Request.Body)
 		if body != nil {
 			c.Data(http.StatusOK, "plain/text; charset=utf-8", []byte(body))
@@ -71,6 +91,11 @@ func API(port string) {
 		}
 		c.Abort()
 
+	})
+
+	r.GET("/api/config.js", func(c *gin.Context) {
+		c.Data(http.StatusOK, "application/javascript; charset=utf-8", []byte(`window.$API$ = `+getConfig()))
+		c.Abort()
 	})
 
 	r.Run(":" + port)

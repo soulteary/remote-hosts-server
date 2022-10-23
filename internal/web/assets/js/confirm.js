@@ -1,7 +1,5 @@
 $(function () {
-  var API = {
-    COMPARE: "/api/diff",
-  };
+  var API = window.$API$;
 
   var instance = null;
   var container = document.getElementById("app");
@@ -33,7 +31,7 @@ $(function () {
 
   function InitializeDiffPage() {
     $.ajax({
-      url: API.COMPARE,
+      url: API.Compare,
       success: function (response) {
         var data = response.data;
         var prepare = response.prepare;
@@ -51,5 +49,3 @@ $(function () {
 
   InitializeDiffPage();
 });
-
-//
