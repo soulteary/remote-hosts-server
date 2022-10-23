@@ -7,11 +7,19 @@ import (
 )
 
 const (
-	HOSTS_FILE_NAME = "hosts.txt"
+	HOSTS_FILE_NAME         = "hosts.txt"
+	PREPARE_HOSTS_FILE_NAME = "prepare.txt"
 )
 
-func GetHostsFileContent() string {
-	data, err := os.ReadFile(filepath.Join("data", HOSTS_FILE_NAME))
+func GetHostsFileContent(mode string) string {
+	fileName := ""
+	if mode == "stable" {
+		fileName = filepath.Join("data", HOSTS_FILE_NAME)
+	} else {
+		fileName = filepath.Join("data", PREPARE_HOSTS_FILE_NAME)
+
+	}
+	data, err := os.ReadFile(fileName)
 	if err != nil {
 		fmt.Println("GetHostsFileContent", err)
 		return ""
@@ -19,16 +27,14 @@ func GetHostsFileContent() string {
 	return string(data)
 }
 
-func SaveHostsFileContent(buffer []byte) bool {
-	err := os.WriteFile(filepath.Join("data", HOSTS_FILE_NAME), buffer, os.ModePerm)
-	return err == nil
-}
-
-func ReadPrepareFile() string {
-	dat, err := os.ReadFile("data/prepare.txt")
-	if err != nil {
-		fmt.Println(err)
+func SaveHostsFileContent(mode string, buffer []byte) bool {
+	// TODO: 判断输入内容有效性
+	fileName := ""
+	if mode == "stable" {
+		fileName = filepath.Join("data", HOSTS_FILE_NAME)
+	} else {
+		fileName = filepath.Join("data", PREPARE_HOSTS_FILE_NAME)
 	}
-	fmt.Print(string(dat))
-	return string(dat)
+	err := os.WriteFile(fileName, buffer, os.ModePerm)
+	return err == nil
 }

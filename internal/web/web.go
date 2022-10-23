@@ -70,15 +70,15 @@ func API(port string) {
 	r.StaticFS("/assets/js", http.FS(js))
 
 	r.GET(API_DATA, func(c *gin.Context) {
-		c.Data(http.StatusOK, "plain/text; charset=utf-8", []byte(file.GetHostsFileContent()))
+		c.Data(http.StatusOK, "plain/text; charset=utf-8", []byte(file.GetHostsFileContent("stable")))
 		c.Abort()
 	})
 
 	r.GET(API_COMPARE, func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"status":  "posted",
-			"data":    file.GetHostsFileContent(),
-			"prepare": file.ReadPrepareFile(),
+			"status":  "ok",
+			"data":    file.GetHostsFileContent("stable"),
+			"prepare": file.GetHostsFileContent("prepare"),
 		})
 		c.Abort()
 	})
@@ -101,7 +101,7 @@ func API(port string) {
 			return
 		}
 
-		success := file.SaveHostsFileContent(body)
+		success := file.SaveHostsFileContent("stable", body)
 		if success {
 			c.Data(http.StatusOK, "plain/text; charset=utf-8", []byte("保存成功"))
 		} else {
