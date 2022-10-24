@@ -41,15 +41,15 @@ $(function () {
       contentType: "text/plain",
       success: function (response) {
         if (!response) {
+          showMessage("The server did not respond correctly");
           return;
         }
-
         if (response.code == 0 && response.next) {
           location.href = response.next;
-        }
-
-        if (response.message) {
-          showMessage(response.message);
+        } else {
+          if (response.message) {
+            showMessage(response.message);
+          }
         }
       },
       error: function (response) {
