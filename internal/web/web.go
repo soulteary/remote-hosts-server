@@ -1,6 +1,7 @@
 package web
 
 import (
+	"bytes"
 	"embed"
 	"encoding/json"
 	"fmt"
@@ -20,8 +21,8 @@ var Favicon embed.FS
 //go:embed pages/index.html
 var HomePage []byte
 
-//go:embed pages/confirm.html
-var ConfirmPage []byte
+//go:embed pages/diff.html
+var DiffPage []byte
 
 //go:embed assets
 var Assets embed.FS
@@ -90,14 +91,15 @@ func makeResponse(c *gin.Context, success bool, reviewed bool) {
 	c.Abort()
 }
 
-func API(port string, mode string) {
+func API(port string, mode string, version string) {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 	r.Use(optimizeResourceCacheTime([]string{"/favicon.png", "/assets/"}))
 
+	tplHomePage := bytes.Replace(HomePage, []byte("{{VERSION}}"), []byte("v"+version), 1)
 	r.Any("/", func(c *gin.Context) {
-		c.Data(http.StatusOK, "text/html; charset=utf-8", HomePage)
+		c.Data(http.StatusOK, "text/html; charset=utf-8", tplHomePage)
 	})
 
 	favicon, _ := fs.Sub(Favicon, "assets")
@@ -117,8 +119,9 @@ func API(port string, mode string) {
 	})
 
 	if strings.ToUpper(mode) != "SIMPLE" {
+		tplDiffPage := bytes.Replace(DiffPage, []byte("{{VERSION}}"), []byte("v"+version), 1)
 		r.Any(PAGE_DIFF, func(c *gin.Context) {
-			c.Data(http.StatusOK, "text/html; charset=utf-8", ConfirmPage)
+			c.Data(http.StatusOK, "text/html; charset=utf-8", tplDiffPage)
 		})
 
 		r.GET(API_DIFF, func(c *gin.Context) {
