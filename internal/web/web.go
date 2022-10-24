@@ -27,16 +27,16 @@ var ConfirmPage []byte
 var Assets embed.FS
 
 const (
-	API_DATA     = "/api/hosts"
-	API_COMPARE  = "/api/compare"
-	API_PREPARE  = "/api/prepare"
-	PAGE_COMPARE = "/confirm"
+	API_DATA    = "/api/hosts"
+	API_DIFF = "/api/diff"
+	API_PREPARE = "/api/prepare"
+	PAGE_DIFF   = "/confirm"
 )
 
 func getConfig() string {
 	config := map[string]string{
 		"Data":    API_DATA,
-		"Compare": API_COMPARE,
+		"Diff": API_DIFF,
 		"Prepare": API_PREPARE,
 	}
 	b, err := json.Marshal(config)
@@ -73,11 +73,11 @@ func API(port string, mode string) {
 	})
 
 	if strings.ToUpper(mode) != "SIMPLE" {
-		r.Any(PAGE_COMPARE, func(c *gin.Context) {
+		r.Any(PAGE_DIFF, func(c *gin.Context) {
 			c.Data(http.StatusOK, "text/html; charset=utf-8", ConfirmPage)
 		})
 
-		r.GET(API_COMPARE, func(c *gin.Context) {
+		r.GET(API_DIFF, func(c *gin.Context) {
 			c.JSON(200, gin.H{
 				"code":    0,
 				"data":    file.GetHostsFileContent("stable"),
@@ -125,7 +125,7 @@ func API(port string, mode string) {
 				c.JSON(200, gin.H{
 					"code":    0,
 					"message": "The data submission is successful.",
-					"next":    PAGE_COMPARE,
+					"next":    PAGE_DIFF,
 				})
 			}
 		} else {

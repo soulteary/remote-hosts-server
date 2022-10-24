@@ -20,7 +20,7 @@ func init() {
 
 func main() {
 	var appPort = config.SetDataFromEnv("PORT", DEFAULT_PORT)
-	var appMode = config.SetDataFromEnv("PORT", DEFUALT_MODE)
+	var appMode = config.SetDataFromEnv("MODE", DEFUALT_MODE)
 	fmt.Println("Web Server Port:", appPort)
 	fmt.Println("Web Server Mode:", appMode)
 	web.API(appPort, appMode)

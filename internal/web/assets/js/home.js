@@ -33,7 +33,7 @@ $(function () {
     });
   }
 
-  function PrepareUpdate(data) {
+  function Submit(data) {
     $.ajax({
       type: "POST",
       url: API.Prepare,
@@ -44,14 +44,12 @@ $(function () {
           return;
         }
 
-        if (response.message) {
-          showMessage(response.message);
+        if (response.code == 0 && response.next) {
+          location.href = response.next;
         }
 
-        if (response.code == 0 && response.next) {
-          setTimeout(function () {
-            location.href = response.next;
-          }, 1000);
+        if (response.message) {
+          showMessage(response.message);
         }
       },
       error: function (response) {
@@ -63,7 +61,7 @@ $(function () {
 
   $('button#submit[data-action="prepare"]').on("click", function (e) {
     e.preventDefault();
-    PrepareUpdate(instance.getValue());
+    Submit(instance.getValue());
     console.log(instance.getValue());
   });
 

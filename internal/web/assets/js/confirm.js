@@ -31,7 +31,7 @@ $(function () {
 
   function InitializeDiffPage() {
     $.ajax({
-      url: API.Compare,
+      url: API.Diff,
       success: function (response) {
         var data = response.data;
         var prepare = response.prepare;
