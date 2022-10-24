@@ -10,6 +10,8 @@
 
 Manage and share your Hosts configuration, suitable for tools such as [SwitchHosts](https://github.com/oldj/SwitchHosts).
 
+![](screenshots/how-to-use.gif)
+
 ## Quick Start
 
 Download the binaries from [GitHub Releases page](https://github.com/soulteary/remote-hosts-server/releases), then quickly start a service for sharing Hosts with just one command:
@@ -44,6 +46,8 @@ Fill this address into Switch Hosts, set the appropriate update frequency, click
 ![](screenshots/with-switchhosts.png)
 
 ## Docker
+
+- [Docker Hub](https://hub.docker.com/r/soulteary/remote-hosts-server)
 
 ![](screenshots/docker.png)
 

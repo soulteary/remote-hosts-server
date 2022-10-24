@@ -92,7 +92,7 @@ $(function () {
     $.ajax({
       url: API.Diff,
       success: function (response) {
-        showMessage("Should we update the original configuration?");
+        showMessage("Should we update?");
         InitializeDiffEditor(response.data, response.prepare);
       },
       error: function (response) {
