@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/fs"
 	"net/http"
+	"strings"
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
@@ -44,7 +45,7 @@ func getConfig() string {
 	return string(b)
 }
 
-func API(port string) {
+func API(port string, mode string) {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
@@ -52,10 +53,6 @@ func API(port string) {
 
 	r.Any("/", func(c *gin.Context) {
 		c.Data(http.StatusOK, "text/html; charset=utf-8", HomePage)
-	})
-
-	r.Any("/confirm", func(c *gin.Context) {
-		c.Data(http.StatusOK, "text/html; charset=utf-8", ConfirmPage)
 	})
 
 	favicon, _ := fs.Sub(Favicon, "assets")
@@ -74,17 +71,24 @@ func API(port string) {
 		c.Abort()
 	})
 
-	r.GET(API_COMPARE, func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"status":  "ok",
-			"data":    file.GetHostsFileContent("stable"),
-			"prepare": file.GetHostsFileContent("prepare"),
+	if strings.ToUpper(mode) != "SIMPLE" {
+		r.Any("/confirm", func(c *gin.Context) {
+			c.Data(http.StatusOK, "text/html; charset=utf-8", ConfirmPage)
 		})
-		c.Abort()
-	})
+
+		r.GET(API_COMPARE, func(c *gin.Context) {
+			c.JSON(200, gin.H{
+				"status":  "ok",
+				"data":    file.GetHostsFileContent("stable"),
+				"prepare": file.GetHostsFileContent("prepare"),
+			})
+			c.Abort()
+		})
+	}
 
 	r.POST(API_PREPARE, func(c *gin.Context) {
 		body, err := io.ReadAll(c.Request.Body)
+		// TODO: 处理需要二次认证对比修改的逻辑
 		if err != nil {
 			// TODO: 提示处理出错
 			fmt.Println(err)

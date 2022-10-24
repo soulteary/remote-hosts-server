@@ -10,6 +10,7 @@ import (
 
 const (
 	DEFAULT_PORT = "3000"
+	DEFUALT_MODE = "SIMPLE"
 )
 
 func init() {
@@ -18,7 +19,9 @@ func init() {
 }
 
 func main() {
-	var appPort = config.SetDataFromEnv("GATE_APP_PORT", DEFAULT_PORT)
-	fmt.Println("Web Server port:", DEFAULT_PORT)
-	web.API(appPort)
+	var appPort = config.SetDataFromEnv("PORT", DEFAULT_PORT)
+	var appMode = config.SetDataFromEnv("PORT", DEFUALT_MODE)
+	fmt.Println("Web Server Port:", appPort)
+	fmt.Println("Web Server Mode:", appMode)
+	web.API(appPort, appMode)
 }
