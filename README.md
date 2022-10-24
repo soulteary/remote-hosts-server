@@ -51,6 +51,25 @@ Fill this address into Switch Hosts, set the appropriate update frequency, click
 
 ![](screenshots/docker.png)
 
+If you are used to using Docker Compose, you can refer to the following configuration:
+
+```bash
+version: '2'
+services:
+
+  remote-hosts-server:
+    image: soulteary/remote-hosts-server
+    ports:
+      - "8080:8080"
+    environment:
+      # same with ports
+      - PORT=8080
+      # mode: normal or simple
+      - MODE=normal
+    volumes:
+      - ./data:/data
+```
+
 ## Resources
 
 - [Gin-Gonic/Gin](https://github.com/gin-gonic/gin)

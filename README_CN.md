@@ -46,6 +46,26 @@ docker run --rm -it -v `pwd`/data:/data -p 8080:8080 soulteary/remote-hosts-serv
 
 ![](screenshots/docker.png)
 
+
+如果你习惯使用 Docker Compose ，可以参考下面的配置使用：
+
+```bash
+version: '2'
+services:
+
+  remote-hosts-server:
+    image: soulteary/remote-hosts-server
+    ports:
+      - "8080:8080"
+    environment:
+      # same with ports
+      - PORT=8080
+      # mode: normal or simple
+      - MODE=normal
+    volumes:
+      - ./data:/data
+```
+
 ## 相关资源
 
 - [Gin-Gonic/Gin](https://github.com/gin-gonic/gin)
