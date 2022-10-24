@@ -36,7 +36,7 @@ $(function () {
   function Submit(data) {
     $.ajax({
       type: "POST",
-      url: API.Prepare,
+      url: API.Submit,
       data: data,
       contentType: "text/plain",
       success: function (response) {
@@ -59,7 +59,7 @@ $(function () {
     });
   }
 
-  $('button#submit[data-action="prepare"]').on("click", function (e) {
+  $('button#submit[data-action="submit"]').on("click", function (e) {
     e.preventDefault();
     Submit(instance.getValue());
     console.log(instance.getValue());

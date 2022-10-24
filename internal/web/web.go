@@ -27,17 +27,17 @@ var ConfirmPage []byte
 var Assets embed.FS
 
 const (
-	API_DATA    = "/api/hosts"
-	API_DIFF = "/api/diff"
-	API_PREPARE = "/api/prepare"
-	PAGE_DIFF   = "/confirm"
+	API_DATA   = "/api/hosts"
+	API_DIFF   = "/api/diff"
+	API_SUBMIT = "/api/submit"
+	PAGE_DIFF  = "/confirm"
 )
 
 func getConfig() string {
 	config := map[string]string{
-		"Data":    API_DATA,
-		"Diff": API_DIFF,
-		"Prepare": API_PREPARE,
+		"Data":   API_DATA,
+		"Diff":   API_DIFF,
+		"Submit": API_SUBMIT,
 	}
 	b, err := json.Marshal(config)
 	if err != nil {
@@ -87,7 +87,7 @@ func API(port string, mode string) {
 		})
 	}
 
-	r.POST(API_PREPARE, func(c *gin.Context) {
+	r.POST(API_SUBMIT, func(c *gin.Context) {
 		body, err := io.ReadAll(c.Request.Body)
 		if err != nil {
 			c.JSON(200, gin.H{
