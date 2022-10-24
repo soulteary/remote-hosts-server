@@ -97,7 +97,7 @@ func API(port string, mode string, version string) {
 	r.Use(gzip.Gzip(gzip.DefaultCompression))
 	r.Use(optimizeResourceCacheTime([]string{"/favicon.png", "/assets/"}))
 
-	tplHomePage := bytes.Replace(HomePage, []byte("{{VERSION}}"), []byte("v"+version), 1)
+	tplHomePage := bytes.Replace(HomePage, []byte("{{VERSION}}"), []byte(version), 1)
 	r.Any("/", func(c *gin.Context) {
 		c.Data(http.StatusOK, "text/html; charset=utf-8", tplHomePage)
 	})
@@ -119,7 +119,7 @@ func API(port string, mode string, version string) {
 	})
 
 	if strings.ToUpper(mode) != "SIMPLE" {
-		tplDiffPage := bytes.Replace(DiffPage, []byte("{{VERSION}}"), []byte("v"+version), 1)
+		tplDiffPage := bytes.Replace(DiffPage, []byte("{{VERSION}}"), []byte(version), 1)
 		r.Any(PAGE_DIFF, func(c *gin.Context) {
 			c.Data(http.StatusOK, "text/html; charset=utf-8", tplDiffPage)
 		})
