@@ -1,0 +1,14 @@
+version: '2'
+services:
+
+  remote-hosts-server:
+    image: soulteary/remote-hosts-server
+    ports:
+      - "8080:8080"
+    environment:
+      # same with ports
+      - PORT=8080
+      # mode: normal or simple
+      - MODE=normal
+    volumes:
+      - ./data:/data
