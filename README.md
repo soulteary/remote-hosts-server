@@ -1,7 +1,37 @@
 # Remote Hosts Server
 
-Manage and share your Hosts configuration, suitable for tools such as Switch Hosts.
+**Tiny (5MB), Easy (One Command), Docker Support (ARM and x86)**
 
+Manage and share your Hosts configuration, suitable for tools such as [SwitchHosts](https://github.com/oldj/SwitchHosts).
+
+## Quick Start
+
+Download the binaries from [GitHub Releases page](https://github.com/soulteary/remote-hosts-server/releases), then quickly start a service for sharing Hosts with just one command:
+
+```bash
+./remote-hosts-server
+```
+
+If you are a Docker user, you can use the following command instead:
+
+```bash
+docker run --rm -it -v `pwd`/data:/data -e "MODE=NORMAL" -p 8080:8080 soulteary/remote-hosts-server
+```
+
+After the program runs, the service will be started on port 8080 by default, the port can be adjusted by setting something like `PORT=8090`.
+
+Then open the browser and you will see the interface:
+
+Update the Hosts content to your liking, then save it.
+
+The program will intelligently judge whether it needs to be reviewed according to the actual situation,
+so as to avoid wrong submission and affect the normal use.
+
+If you always don't want the second confirmation interface, you can add parameters `MODE=SIMPLE` at startup to avoid it.
+
+When we save the HOSTS, we can get the shared Hosts configuration by visiting `http://ip:port/api/hosts` (eg: `http://localhost:8080/api/hosts`)
+
+Fill this address into Switch Hosts, set the appropriate update frequency, click Update Data to verify whether the data can be obtained, and then click OK to automatically update the configuration.
 
 
 ## Resources
