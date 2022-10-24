@@ -27,9 +27,10 @@ var ConfirmPage []byte
 var Assets embed.FS
 
 const (
-	API_DATA    = "/api/data"
-	API_COMPARE = "/api/compare"
-	API_PREPARE = "/api/prepare"
+	API_DATA     = "/api/hosts"
+	API_COMPARE  = "/api/compare"
+	API_PREPARE  = "/api/prepare"
+	PAGE_COMPARE = "/confirm"
 )
 
 func getConfig() string {
@@ -72,13 +73,13 @@ func API(port string, mode string) {
 	})
 
 	if strings.ToUpper(mode) != "SIMPLE" {
-		r.Any("/confirm", func(c *gin.Context) {
+		r.Any(PAGE_COMPARE, func(c *gin.Context) {
 			c.Data(http.StatusOK, "text/html; charset=utf-8", ConfirmPage)
 		})
 
 		r.GET(API_COMPARE, func(c *gin.Context) {
 			c.JSON(200, gin.H{
-				"status":  "ok",
+				"code":    0,
 				"data":    file.GetHostsFileContent("stable"),
 				"prepare": file.GetHostsFileContent("prepare"),
 			})
@@ -88,28 +89,50 @@ func API(port string, mode string) {
 
 	r.POST(API_PREPARE, func(c *gin.Context) {
 		body, err := io.ReadAll(c.Request.Body)
-		// TODO: 处理需要二次认证对比修改的逻辑
 		if err != nil {
-			// TODO: 提示处理出错
-			fmt.Println(err)
-			c.Data(http.StatusOK, "plain/text; charset=utf-8", []byte("请求有问题"))
+			c.JSON(200, gin.H{
+				"code":    1,
+				"message": "Error: There is a problem with submitting the data.",
+			})
 			c.Abort()
+			fmt.Println(err)
 			return
 		}
 
 		if body == nil {
-			// TODO: 提示处理出错
-			fmt.Println(err)
-			c.Data(http.StatusOK, "plain/text; charset=utf-8", []byte("请求有问题"))
+			c.JSON(200, gin.H{
+				"code":    2,
+				"message": "Error: No commit data detected.",
+			})
 			c.Abort()
 			return
 		}
 
-		success := file.SaveHostsFileContent("stable", body)
-		if success {
-			c.Data(http.StatusOK, "plain/text; charset=utf-8", []byte("保存成功"))
+		success := false
+		if mode == "SIMPLE" {
+			success = file.SaveHostsFileContent("stable", body)
 		} else {
-			c.Data(http.StatusOK, "plain/text; charset=utf-8", []byte("保存失败"))
+			success = file.SaveHostsFileContent("prepare", body)
+		}
+
+		if success {
+			if mode == "SIMPLE" {
+				c.JSON(200, gin.H{
+					"code":    0,
+					"message": "Hosts data saved successfully.",
+				})
+			} else {
+				c.JSON(200, gin.H{
+					"code":    0,
+					"message": "The data submission is successful.",
+					"next":    PAGE_COMPARE,
+				})
+			}
+		} else {
+			c.JSON(200, gin.H{
+				"code":    0,
+				"message": "Failed to save data",
+			})
 		}
 		c.Abort()
 	})

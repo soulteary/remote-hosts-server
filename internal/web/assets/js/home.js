@@ -2,6 +2,20 @@ $(function () {
   var API = window.$API$;
   var instance = null;
 
+  function showMessage(message) {
+    var container = $(".submit-result");
+    container.removeClass("show hide").text(message).show().addClass("show");
+    setTimeout(function () {
+      container.removeClass("show").addClass("hide");
+    }, 3000);
+  }
+
+  function echo(message) {
+    if (console && console.log) {
+      console.log(message);
+    }
+  }
+
   function InitializeEditor(data) {
     var hidden = document.createElement("textarea");
     hidden.style.display = "none";
@@ -26,12 +40,23 @@ $(function () {
       data: data,
       contentType: "text/plain",
       success: function (response) {
-        // TODO: 跳转下一步
-        console.log(response);
+        if (!response) {
+          return;
+        }
+
+        if (response.message) {
+          showMessage(response.message);
+        }
+
+        if (response.code == 0 && response.next) {
+          setTimeout(function () {
+            location.href = response.next;
+          }, 1000);
+        }
       },
       error: function (response) {
-        // TODO: 处理错误提示
-        console.log(response);
+        showMessage("Failed to update Hosts data.");
+        echo(response);
       },
     });
   }
@@ -45,14 +70,13 @@ $(function () {
   function InitializeHomepage() {
     $.ajax({
       url: API.Data,
-      success: function (data) {
-        // TODO: 提示初始化成功
-        InitializeEditor(data);
-        console.log(data);
+      success: function (response) {
+        showMessage("Get the latest data successfully.");
+        InitializeEditor(response);
       },
-      error: function (data) {
-        // TODO: 处理错误提示
-        console.log(data);
+      error: function (response) {
+        showMessage("Failed to get Hosts data.");
+        echo(response);
       },
     });
   }

@@ -15,8 +15,9 @@ body {
 
 .button-group {
   position: relative;
-  width: 160px;
+  width: 100%;
   height: 80px;
+  overflow: hidden;
 }
 
 .button-group canvas {
@@ -41,11 +42,12 @@ body {
   outline: none;
   overflow: hidden;
   padding: 0 10px;
-  position: absolute;
-  top: 20px;
+  position: relative;
+  margin-top: 20px;
   width: 140px;
   -webkit-tap-highlight-color: transparent;
   z-index: 1;
+  float: left;
 }
 button::before {
   background: #1f3527;
@@ -170,4 +172,65 @@ button.complete .successMessage svg {
 
 .loadingCircle:nth-child(3) {
   animation-delay: 0.2s;
+}
+
+.submit-result {
+  display: none;
+  position: relative;
+  height: 20px;
+  background: #000;
+  width: 320px;
+  border-radius: 6px;
+  color: #b9b9b9;
+  line-height: 1;
+  padding: 10px;
+  float: left;
+  margin-top: 20px;
+  line-height: 20px;
+}
+
+.submit-result.show {
+  -webkit-animation: show 1s linear forwards;
+  animation: show 1s linear forwards;
+}
+.submit-result.hide {
+  -webkit-animation: hide 1s linear forwards;
+  animation: hide 1s linear forwards;
+}
+
+@-webkit-keyframes show {
+  0%{
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes show {
+  0%{
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+
+@-webkit-keyframes hide {
+  0%{
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes hide {
+  0%{
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
