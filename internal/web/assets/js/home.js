@@ -62,7 +62,6 @@ $(function () {
   $('button#submit[data-action="submit"]').on("click", function (e) {
     e.preventDefault();
     Submit(instance.getValue());
-    console.log(instance.getValue());
   });
 
   function InitializeHomepage() {

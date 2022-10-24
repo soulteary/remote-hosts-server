@@ -46,6 +46,50 @@ func getConfig() string {
 	return string(b)
 }
 
+func requiresManualReview() bool {
+	stable := file.GetHostsFileContent("stable")
+	prepare := file.GetHostsFileContent("prepare")
+
+	// not modified
+	if stable == prepare {
+		return false
+	}
+
+	// hosts file not exist
+	if stable == "" {
+		return false
+	}
+	return true
+}
+
+func isReviewed(input string) bool {
+	return strings.ToUpper(strings.TrimSpace(input)) == "OK"
+}
+
+func makeResponse(c *gin.Context, success bool, reviewed bool) {
+	if success {
+		if !reviewed {
+			c.JSON(200, gin.H{
+				"code":    0,
+				"message": "Hosts data saved successfully.",
+			})
+		} else {
+			c.JSON(200, gin.H{
+				"code":    0,
+				"message": "Hosts data saved successfully.",
+				"next":    "/",
+			})
+		}
+	} else {
+		c.JSON(200, gin.H{
+			"code":    0,
+			"message": "Failed to save data",
+		})
+
+	}
+	c.Abort()
+}
+
 func API(port string, mode string) {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
@@ -109,32 +153,30 @@ func API(port string, mode string) {
 		}
 
 		success := false
-		if mode == "SIMPLE" {
+		userReviewed := isReviewed(c.Query("confirm"))
+		if mode == "SIMPLE" || userReviewed {
 			success = file.SaveHostsFileContent("stable", body)
+			makeResponse(c, success, userReviewed)
+			return
 		} else {
 			success = file.SaveHostsFileContent("prepare", body)
-		}
-
-		if success {
-			if mode == "SIMPLE" {
-				c.JSON(200, gin.H{
-					"code":    0,
-					"message": "Hosts data saved successfully.",
-				})
-			} else {
-				c.JSON(200, gin.H{
-					"code":    0,
-					"message": "The data submission is successful.",
-					"next":    PAGE_DIFF,
-				})
+			if !success {
+				makeResponse(c, success, userReviewed)
+				return
 			}
-		} else {
+
+			needReview := requiresManualReview()
+			if !needReview {
+				success = file.SaveHostsFileContent("stable", body)
+				makeResponse(c, success, userReviewed)
+				return
+			}
 			c.JSON(200, gin.H{
-				"code":    0,
-				"message": "Failed to save data",
+				"code": 0,
+				"next": PAGE_DIFF,
 			})
+			c.Abort()
 		}
-		c.Abort()
 	})
 
 	r.GET("/api/config.js", func(c *gin.Context) {

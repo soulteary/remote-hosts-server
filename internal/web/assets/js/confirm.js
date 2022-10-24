@@ -1,18 +1,24 @@
 $(function () {
   var API = window.$API$;
 
+  function showMessage(message) {
+    var container = $(".submit-result");
+    container.removeClass("show hide").text(message).show().addClass("show");
+    setTimeout(function () {
+      container.removeClass("show").addClass("hide");
+    }, 3000);
+  }
+
+  function echo(message) {
+    if (console && console.log) {
+      console.log(message);
+    }
+  }
+
   var instance = null;
   var container = document.getElementById("app");
 
   function InitializeEditor(rawData, newData) {
-    if (rawData == "") {
-      // TODO: 可以直接保存，判断新数据是否存在，有效性
-      return;
-    }
-    if (newData == "") {
-      // TODO: 提示数据有问题
-      return;
-    }
     var hidden = document.createElement("textarea");
     hidden.style.display = "none";
     hidden.value = newData;
@@ -23,7 +29,6 @@ $(function () {
       orig: rawData,
       lineNumbers: true,
       collapseIdentical: true,
-      // connect: "align",
       mode: "hosts",
       theme: "seti",
     });
@@ -33,19 +38,48 @@ $(function () {
     $.ajax({
       url: API.Diff,
       success: function (response) {
-        var data = response.data;
-        var prepare = response.prepare;
-        // TODO: 提示初始化成功
-        InitializeEditor(data, prepare);
+        showMessage("Should we update the original configuration?");
+        InitializeEditor(response.data, response.prepare);
       },
-      error: function (data) {
-        // TODO: 处理错误提示
-        console.log(data);
+      error: function (response) {
+        showMessage("Failed to get Hosts diff data.");
+        echo(response);
       },
     });
 
     InitializeEditor();
   }
+
+  function Submit(data, confirmReview) {
+    $.ajax({
+      type: "POST",
+      url: API.Submit + (confirmReview ? "?confirm=ok" : ""),
+      data: data,
+      contentType: "text/plain",
+      success: function (response) {
+        if (!response) {
+          showMessage("The server did not respond correctly");
+          return;
+        }
+        if (response.code == 0 && response.next) {
+          location.href = response.next;
+        } else {
+          if (response.message) {
+            showMessage(response.message);
+          }
+        }
+      },
+      error: function (response) {
+        showMessage("Failed to update Hosts data.");
+        echo(response);
+      },
+    });
+  }
+
+  $('button#submit[data-action="confirm"]').on("click", function (e) {
+    e.preventDefault();
+    Submit(instance.edit.getValue(), true);
+  });
 
   InitializeDiffPage();
 });
